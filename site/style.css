@@ -79,6 +79,10 @@ body {
   text-shadow: 0 0 24px rgba(255, 179, 71, 0.35);
 }
 
+@media (max-width: 560px) {
+  .oracle { padding-top: 3.25rem; }
+}
+
 .subtitle {
   margin: 0 0 1.25rem;
   font-style: italic;
