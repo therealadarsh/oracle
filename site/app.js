@@ -2,6 +2,7 @@
   const params = new URLSearchParams(location.search);
   const devMode = params.has("dev");
   const kioskMode = params.has("kiosk");
+  const aiMode = params.has("ai");
 
   const body = document.body;
   const prophecyPanel = document.getElementById("prophecy-panel");
@@ -347,7 +348,7 @@
   }
 
   async function fetchAiProphecy(question) {
-    if (Date.now() - lastAiCall < AI_COOLDOWN_MS) return null;
+    if (!aiMode || !question || Date.now() - lastAiCall < AI_COOLDOWN_MS) return null;
     lastAiCall = Date.now();
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
@@ -361,7 +362,8 @@
       clearTimeout(t);
       if (!res.ok) return null;
       const data = await res.json();
-      return data.text && String(data.text).trim() ? String(data.text).trim() : null;
+      const text = String(data.text || "").trim();
+      return text && text.split(/\s+/).length <= 30 && !/[^\x20-\x7E]/.test(text) ? text : null;
     } catch (_) {
       clearTimeout(t);
       return null;
@@ -460,16 +462,12 @@
       setProphecyText(Oracle.thinkingLines[li]);
     }, 900);
 
+    const answering = resolveAnswer(question).catch(() => Oracle.answer(question));
     const delay = 2000 + Math.random() * 1500;
     await new Promise((r) => { thinkTimer = setTimeout(r, delay); });
 
     clearThinkTimers();
-    let result;
-    try {
-      result = await resolveAnswer(question);
-    } catch (_) {
-      result = Oracle.answer(question);
-    }
+    const result = await answering;
     if (result.category === "blocked") {
       setProphecyText(result.text);
       playCreak();

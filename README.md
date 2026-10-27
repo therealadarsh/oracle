@@ -4,7 +4,7 @@ The Oracle of Cubicle 13 is a browser-based Halloween oracle for an office party
 
 **Test:** From the project root, run `node --test`.
 
-**Deploy:** Drag the `site` folder to [app.netlify.com/drop](https://app.netlify.com/drop) for a quick HTTPS link (mic works on localhost or HTTPS). For optional AI prophecies (phase 9), connect the repo or use the Netlify CLI so serverless functions run. Set `ANTHROPIC_API_KEY` in the Netlify site environment variables—never in client code or git.
+**Deploy:** Drag the `site` folder to [app.netlify.com/drop](https://app.netlify.com/drop) for a quick HTTPS link (mic works on localhost or HTTPS). For optional AI prophecies (phase 9), connect the repo or use the Netlify CLI so serverless functions run. Set `ANTHROPIC_API_KEY` in the Netlify site environment variables—never in client code or git. The page only tries the AI when the URL has `?ai=1` (for example `/?kiosk=1&ai=1`); without it every answer comes from the built-in notebook and the console stays clean.
 
 **Party laptop:** Open `https://your-site.netlify.app/?kiosk=1`, press **F** for fullscreen, use **Space** to talk, **M** to mute.
 
