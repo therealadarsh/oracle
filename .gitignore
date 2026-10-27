@@ -1,0 +1,5 @@
+results.tsv
+.DS_Store
+node_modules/
+.env
+.netlify/
