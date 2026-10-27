@@ -139,3 +139,99 @@ test("coverage: categories and lists", () => {
   assert.equal(Oracle.attractLines.length, 6);
   assert.equal(Oracle.chips.length, 6);
 });
+
+// Sprint 1 additions (CR-001, INC-001, INC-002). Existing tests above are unchanged.
+
+function everyLine() {
+  const { CATEGORIES, MY_INSIDE_JOKES } = Oracle.data;
+  const lines = [];
+  for (const [category, pool] of Object.entries(CATEGORIES)) {
+    for (const text of pool) lines.push({ source: category, text });
+  }
+  for (const joke of MY_INSIDE_JOKES) {
+    for (const text of joke.lines) lines.push({ source: "inside jokes", text });
+  }
+  return lines;
+}
+
+const BANNED_TOPICS = [
+  "layoff", "layoffs", "laid off", "fired", "firing", "terminated", "salary",
+  "paycheck", "money", "budget", "headcount", "reorg", "sick", "illness",
+  "health", "doctor",
+];
+
+function hasWord(text, word) {
+  return new RegExp(`\\b${word}\\b`, "i").test(text);
+}
+
+test("data gate: plain ASCII only, so nothing is read aloud as a symbol", () => {
+  for (const { source, text } of everyLine()) {
+    assert.match(text, /^[A-Za-z0-9 .,!?'-]+$/, `${source}: odd character in: ${text}`);
+  }
+});
+
+test("data gate: no all-caps words that a robot voice would spell out", () => {
+  for (const { source, text } of everyLine()) {
+    assert.ok(!/\b[A-Z]{2,}\b/.test(text), `${source}: abbreviation in: ${text}`);
+  }
+});
+
+test("data gate: no banned topic words or blocklist words in any prophecy", () => {
+  for (const { source, text } of everyLine()) {
+    for (const word of [...BANNED_TOPICS, ...Oracle.data.BLOCKLIST]) {
+      assert.ok(!hasWord(text, word), `${source}: "${word}" in: ${text}`);
+    }
+  }
+});
+
+test("data gate: same length, ending and duplicate rules apply to every line including inside jokes", () => {
+  const seen = new Set();
+  for (const { source, text } of everyLine()) {
+    assert.ok(text.trim().length > 0, `${source}: empty line`);
+    assert.ok(text.split(/\s+/).length <= 30, `${source}: too long: ${text}`);
+    assert.match(text.trim(), /[.!?]$/, `${source}: no ending punctuation: ${text}`);
+    assert.ok(!seen.has(text), `${source}: duplicate: ${text}`);
+    seen.add(text);
+  }
+});
+
+test("blocked: whole words only, so hello and shell are fine", () => {
+  for (const ok of ["Hello oracle", "is my shell script ok", "scrap the plan", "Michelle says hi"]) {
+    assert.equal(Oracle.blocked(ok), false, ok);
+    Oracle.reset();
+    assert.notEqual(Oracle.answer(ok).category, "blocked", ok);
+  }
+  for (const bad of ["what the hell", "damn it", "that is crap!", "Hell."]) {
+    assert.equal(Oracle.blocked(bad), true, bad);
+  }
+});
+
+test("routing: all six chips land in their intended category", () => {
+  const expected = [
+    "meetings",
+    "wifi and tech and printer",
+    "wifi and tech and printer",
+    "email",
+    "coffee and food",
+    "monday and friday",
+  ];
+  Oracle.chips.forEach((chip, i) => {
+    Oracle.reset();
+    assert.equal(Oracle.answer(chip).category, expected[i], chip);
+  });
+});
+
+test("routing: Wi-Fi with a hyphen, plurals, and no matches inside other words", () => {
+  const cases = [
+    ["Will the Wi-Fi survive today?", "wifi and tech and printer"],
+    ["Will the wi fi work", "wifi and tech and printer"],
+    ["are my meetings cancelled", "meetings"],
+    ["will I succeed at the party", "luck and yes or no questions"],
+    ["what is my account status", "generic"],
+    ["I feel entitled to attention", "generic"],
+  ];
+  for (const [q, category] of cases) {
+    Oracle.reset();
+    assert.equal(Oracle.answer(q).category, category, q);
+  }
+});

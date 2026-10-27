@@ -40,8 +40,8 @@ const Oracle = {
   recent: [],
 
   blocked(question) {
-    const q = String(question).toLowerCase();
-    return BLOCKLIST.some((w) => q.includes(w));
+    const q = " " + String(question).toLowerCase().replace(/[^\w\s]/g, " ").replace(/\s+/g, " ") + " ";
+    return BLOCKLIST.some((w) => q.includes(" " + w + " ") || q.includes(" " + w + "s "));
   },
 
   reset() {
@@ -64,9 +64,10 @@ const Oracle = {
       };
     }
 
-    const normalized = raw.toLowerCase().replace(/[^\w\s]/g, " ");
+    // Padded with spaces so keywords match the start of a word, not the middle of one.
+    const normalized = " " + raw.toLowerCase().replace(/[^\w\s]/g, " ").replace(/\s+/g, " ") + " ";
     for (const joke of MY_INSIDE_JOKES) {
-      if (joke.keywords.some((k) => normalized.includes(k))) {
+      if (joke.keywords.some((k) => normalized.includes(" " + k))) {
         return this.pickFrom("inside", joke.lines, rng);
       }
     }
@@ -78,7 +79,7 @@ const Oracle = {
 
   matchCategory(normalized) {
     for (const { name, keywords } of CATEGORY_ORDER) {
-      if (keywords.some((k) => normalized.includes(k))) return name;
+      if (keywords.some((k) => normalized.includes(" " + k))) return name;
     }
     return "generic";
   },
@@ -95,7 +96,7 @@ const Oracle = {
 
 const CATEGORY_ORDER = [
   { name: "meetings", keywords: ["meeting", "standup", "zoom", "calendar", "sync", "agenda"] },
-  { name: "wifi and tech and printer", keywords: ["printer", "wifi", "wi-fi", "vpn", "laptop", "computer", "tech", "network", "jam", "toner"] },
+  { name: "wifi and tech and printer", keywords: ["printer", "wifi", "wi fi", "vpn", "laptop", "computer", "tech", "network", "jam", "toner"] },
   { name: "email", keywords: ["email", "inbox", "reply", "cc", "bcc", "outlook", "slack message"] },
   { name: "coffee and food", keywords: ["coffee", "lunch", "snack", "food", "breakfast", "microwave", "fridge"] },
   { name: "boss", keywords: ["boss", "manager", "supervisor", "director", "one on one"] },
@@ -124,8 +125,8 @@ const CATEGORIES = {
     "A quick chat will grow roots and become a quarterly theme.",
     "Praise will be vague. The task list will be very specific.",
     "You will be asked how you feel about synergy. Choose words carefully.",
-    "The one-on-one will start with how are things and end with headcount math you cannot see.",
-    "Your boss will see the deck. The deck will not see your sleep schedule.",
+    "The one-on-one will start with how are things and end with a chart nobody explains.",
+    "Your boss will see the deck. The deck will not see your weekend plans.",
     "Alignment will be requested. Alignment will remain mythical.",
   ],
   deadlines: [
@@ -151,12 +152,12 @@ const CATEGORIES = {
   "wifi and tech and printer": [
     "The printer knows what you did. It is deciding how to respond.",
     "The wifi will hold until the moment you share your screen.",
-    "VPN will connect on the third try, or the fourth, or never with grace.",
+    "The remote login will connect on the third try, or the fourth, or never with grace.",
     "The printer jam is not mechanical. It is personal.",
     "Update will install during the only demo that mattered today.",
     "Your laptop will wake from sleep when you least want an audience.",
     "The shared drive will spin forever, then reveal one corrupted file.",
-    "IT will ask if you restarted. You will restart your soul instead.",
+    "The help desk will ask if you restarted. You will restart your soul instead.",
   ],
   email: [
     "Soon you will receive an email that begins with the words, per my last message.",
@@ -164,15 +165,15 @@ const CATEGORIES = {
     "Reply all will awaken a thread you thought was buried.",
     "The urgent flag will be used on something about parking.",
     "Your draft will send itself in a timeline you refuse to discuss.",
-    "Someone will CC the entire floor for a question with two answers.",
+    "Someone will copy the entire floor on a question with two answers.",
     "The out-of-office auto reply will be more helpful than the human.",
     "You will archive hope. New mail will find you anyway.",
   ],
   career: [
-    "The promotion is near, like the horizon, or the next reorg slide.",
+    "The promotion is near, like the horizon, or the next org chart slide.",
     "Your skills will shine the day after the big presentation.",
     "A recruiter will appear in your notifications like a polite ghost.",
-    "The title change will be real in email and imaginary in budget.",
+    "The title change will be real in email and imaginary on the door.",
     "You will update your resume mentally during a very long meeting.",
     "Opportunity knocks softly. It sounds like someone needing coverage.",
     "Your best work will live in a doc nobody opened.",
@@ -182,7 +183,7 @@ const CATEGORIES = {
     "The weekend will arrive. Your brain will still be in standup.",
     "Vacation photos will load slower than your return inbox.",
     "You will check email on the beach. The oracle sees you.",
-    "PTO will be approved after you already bought the tickets.",
+    "Time off will be approved after you already bought the tickets.",
     "Sunday night will feel like a prequel to Monday.",
     "Rest will come in five-minute increments between notifications.",
     "The out-of-office message will be poetry nobody reads.",
@@ -204,7 +205,7 @@ const CATEGORIES = {
     "Fortune favors the prepared slide deck and the spare charger.",
     "Luck is on your side, hiding behind the copier.",
     "Signs point to maybe, which is how committees are born.",
-    "The spirits vote yes. The budget votes present.",
+    "The spirits vote yes. The committee votes present.",
     "Your fate is fifty-fifty, like a coin stuck in the vending machine.",
     "Yes, but not until everyone has had a chance to overthink it.",
   ],
@@ -235,7 +236,7 @@ const CATEGORIES = {
     "A fire drill will be practice. Your panic will be authentic.",
     "The water cooler rumor will be wrong but entertaining.",
     "Fluorescent lights will flicker like a passive-aggressive omen.",
-    "You will discover a meeting room booked by someone named TBD.",
+    "You will discover a meeting room booked by someone named To Be Decided.",
     "The oracle sees a sticky keyboard and a clean conscience, rarely together.",
     "Destiny waits by the copier. Bring your own paper.",
     "Tomorrow will rhyme with today, uncomfortably.",
@@ -243,6 +244,8 @@ const CATEGORIES = {
     "Something minor will go wrong in a way you will retell for years.",
   ],
 };
+
+Oracle.data = { CATEGORIES, MY_INSIDE_JOKES, BLOCKLIST };
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = Oracle;
