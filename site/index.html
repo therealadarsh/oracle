@@ -4,10 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Oracle of Cubicle 13</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>The Oracle of Cubicle 13</h1>
+<body data-state="idle">
+  <svg class="cobweb cobweb-tl" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M0 0 L120 120 M0 30 Q60 20 120 30 M0 60 Q60 50 120 60 M0 90 Q60 80 120 90 M30 0 Q20 60 30 120 M60 0 Q50 60 60 120 M90 0 Q80 60 90 120" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.35"/>
+  </svg>
+  <svg class="cobweb cobweb-br" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M0 0 L120 120 M0 30 Q60 20 120 30 M0 60 Q60 50 120 60 M0 90 Q60 80 120 90 M30 0 Q20 60 30 120 M60 0 Q50 60 60 120 M90 0 Q80 60 90 120" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.35"/>
+  </svg>
+
+  <button type="button" id="sound-toggle" class="corner-toggle" aria-pressed="true" aria-label="Sound on">Sound</button>
+  <button type="button" id="fullscreen-toggle" class="corner-toggle corner-tr" aria-label="Fullscreen">Full</button>
+
+  <main class="oracle">
+    <header class="oracle-header">
+      <h1>The Oracle of Cubicle 13</h1>
+      <p class="subtitle">Speak your question. Receive your fate.</p>
+    </header>
+
+    <div class="stage">
+      <div class="fog fog-back" aria-hidden="true"></div>
+      <div class="fog fog-front" aria-hidden="true"></div>
+      <div class="candle candle-left" aria-hidden="true"><span class="flame"></span></div>
+      <div class="orb-wrap">
+        <div class="orb" aria-hidden="true">
+          <div class="orb-swirl"></div>
+          <div class="orb-glow"></div>
+        </div>
+        <div class="orb-rings" aria-hidden="true"></div>
+      </div>
+      <div class="candle candle-right" aria-hidden="true"><span class="flame"></span></div>
+    </div>
+
+    <p id="status-line" class="status-line" aria-live="polite"></p>
+    <p id="heard-line" class="heard-line" aria-live="polite"></p>
+
+    <div id="prophecy-panel" class="prophecy-panel" aria-live="polite">Approach, mortal...</div>
+
+    <button type="button" id="ask-btn" class="ask-btn">Ask the Oracle</button>
+    <p id="mic-fallback" class="mic-fallback hidden">Type your question or tap one below</p>
+
+    <form id="type-form" class="type-form">
+      <input type="text" id="question-input" maxlength="200" autocomplete="off" placeholder="Type your question..." aria-label="Question">
+      <button type="submit" id="type-ask-btn">Ask</button>
+    </form>
+
+    <div id="chips" class="chips"></div>
+
+    <details class="voice-settings">
+      <summary class="gear" aria-label="Voice settings">⚙</summary>
+      <label>
+        Voice
+        <select id="voice-picker"></select>
+      </label>
+    </details>
+  </main>
+
   <script src="prophecies.js"></script>
   <script src="app.js"></script>
 </body>
