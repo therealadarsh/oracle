@@ -1,0 +1,12 @@
+# build log and local files
+results.tsv
+.DS_Store
+node_modules/
+.env
+.netlify/
+
+# agent notes and prompts: kept on disk, never committed
+AGENTS.md
+CLAUDE.md
+program.md
+PROMPTS.md
