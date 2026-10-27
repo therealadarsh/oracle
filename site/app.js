@@ -538,7 +538,8 @@
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.target === questionInput) return;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target === questionInput) return;
+    if (["SELECT", "SUMMARY"].includes(e.target.tagName)) return;
     if (devMode && e.key >= "1" && e.key <= "5") {
       const map = ["idle", "listening", "thinking", "speaking", "error"];
       setState(map[Number(e.key) - 1]);
