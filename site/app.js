@@ -412,7 +412,7 @@
       for (let i = ev.resultIndex; i < ev.results.length; i++) {
         text += ev.results[i][0].transcript;
       }
-      heardLine.textContent = text ? `You said: ${text}` : "";
+      heardLine.textContent = text && !Oracle.blocked(text) ? `You said: ${text}` : "";
       if (ev.results[ev.results.length - 1].isFinal && text.trim()) {
         stopRecognition();
         runThinkingFlow(text.trim());
