@@ -390,6 +390,7 @@
 
   function startListening() {
     if (!hasSpeechIn || state !== "idle") return;
+    try { speechSynthesis.cancel(); } catch (_) {}
     resetInteractionTimers();
     heardLine.textContent = "";
     setState("listening");
