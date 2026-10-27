@@ -105,10 +105,8 @@
       stopIdleDrone();
       clearAttract();
     }
-    if (next === "error") {
-      if (errorTimer) clearTimeout(errorTimer);
-      errorTimer = setTimeout(() => setState("idle"), 3000);
-    }
+    if (errorTimer) clearTimeout(errorTimer);
+    if (next === "error") errorTimer = setTimeout(() => setState("idle"), 3000);
   }
 
   function setProphecyText(text) {
